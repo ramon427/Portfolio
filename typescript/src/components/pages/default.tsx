@@ -5,6 +5,7 @@ function Default() {
     return (
         <>
             <Header></Header>
+
             <Message></Message>
         </>
     )

@@ -1,11 +1,10 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
 
-import {
-    useMutation,
-} from '@tanstack/react-query'
+import {useMutation} from '@tanstack/react-query'
 import {host} from "@/lib/utils.ts";
+import {useAuth} from "@/components/providers/AuthProvider.tsx";
 
 const submitPassword = async (password: string): Promise<any> => {
     const response = await fetch(`${host}/api/password`, {
@@ -13,11 +12,11 @@ const submitPassword = async (password: string): Promise<any> => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({password}),
     });
 
     if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Response not ok');
     }
 
     return response.json();
@@ -25,25 +24,25 @@ const submitPassword = async (password: string): Promise<any> => {
 
 const PasswordForm = () => {
     const [password, setPassword] = useState('');
+    const {setAuthToken} = useAuth();
 
     const mutation = useMutation({
         mutationFn: submitPassword,
-        onSuccess: (data) => {
-            console.log('Success:', data);
-        },
-        onError: (error) => {
-            console.error('Error:', error);
-        },
     });
-    const handleSubmit = async (event: React.FormEvent) => {
+    const handleSubmit = async event => {
         event.preventDefault();
 
         try {
-            await mutation.mutateAsync(password);
+            const result = await mutation.mutateAsync(password);
+            if (result && result.token) {
+                setAuthToken(result.token); // This will now persist in localStorage
+            }
+
         } catch (error) {
             console.log(error);
         }
     };
+
 
     return (
         <form onSubmit={handleSubmit}>

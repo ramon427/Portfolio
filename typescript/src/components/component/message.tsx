@@ -1,28 +1,33 @@
 import {host} from "@/lib/utils.ts";
 
-import {
-    useQuery,
-} from '@tanstack/react-query'
+import {useQuery} from '@tanstack/react-query'
+import {useAuth} from "@/components/providers/AuthProvider.tsx";
 
 function Message() {
-    return <h1>{getMessage()}</h1>
-}
+    const { authToken } = useAuth();
 
-function getMessage() {
-    const {isPending, error, data} = useQuery({
+    const { isLoading, error, data } = useQuery({
         queryKey: ['test'],
-        queryFn: () =>
-            fetch(`${host}/api/test`).then((res) =>
-                res.text(),
-            ),
-    })
+        queryFn: async () => {
+            const response = await fetch(`${host}/api/test`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': authToken ? `Bearer ${authToken}` : ''
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        },
+        enabled: !!authToken,
+    });
 
-    if (isPending) return 'Loading...'
+    if (isLoading) return <h1>Loading...</h1>;
 
-    if (error) return 'An error has occurred: ' + error.message
+    if (error) return <h1>An error has occurred: {error.message}</h1>;
 
-    return data;
-
+    return <h1>{data}</h1>;
 }
 
 export default Message;

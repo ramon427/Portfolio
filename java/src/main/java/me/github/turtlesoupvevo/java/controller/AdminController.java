@@ -25,19 +25,12 @@ public class AdminController {
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> receivePassword(@RequestBody Map<String, String> requestBody, HttpServletResponse servletResponse) {
-        String password = requestBody.get("password");
+        var password = requestBody.get("password");
         var passwordCorrect = passwordService.checkPassword(password);
         var response = new HashMap<String, Object>();
 
         if (passwordCorrect) {
             var token = tokenService.generateToken();
-
-            Cookie cookie = new Cookie("jwtToken", token);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(3600);
-            servletResponse.addCookie(cookie);
 
             response.put("token", token);
             response.put("success", true);
