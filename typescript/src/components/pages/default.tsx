@@ -1,12 +1,12 @@
 import {Header} from "@/components/component/header.tsx";
-import Message from "@/components/component/message.tsx";
+import Collection from "@/components/ui/collection.tsx";
 
 function Default() {
     return (
         <>
             <Header></Header>
 
-            <Message></Message>
+            <Collection></Collection>
         </>
     )
 }
