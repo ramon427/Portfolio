@@ -1,7 +1,8 @@
 import AddProject from "@/components/component/addproject.tsx";
 
-function Collection() {
+function Collection({children}) {
     return <div>
+        {children}
         <AddProject></AddProject>
     </div>
 }

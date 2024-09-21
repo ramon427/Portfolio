@@ -35,7 +35,7 @@ const PasswordForm = () => {
         try {
             const result = await mutation.mutateAsync(password);
             if (result && result.token) {
-                setAuthToken(result.token); // This will now persist in localStorage
+                setAuthToken(result.token);
             }
 
         } catch (error) {
