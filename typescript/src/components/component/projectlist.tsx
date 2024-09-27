@@ -3,9 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { host } from "@/lib/utils.ts";
 import Collection from "@/components/ui/collection.tsx";
 import Project from "@/components/component/project.tsx";
+import {useState} from "react";
 
 function ProjectList() {
     const { authToken } = useAuth();
+    const [projects, setProjects] = useState([]);
+
+    const handleProjectAdded = (newProject) => {
+        setProjects([...projects, newProject]);
+    };
 
     const { isLoading, error, data } = useQuery({
         queryKey: ['projects'],
@@ -29,10 +35,12 @@ function ProjectList() {
     if (error) return <h1>An error has occurred: {error.message}</h1>;
 
     // Add a check to ensure data is an array before mapping
-    const projects = Array.isArray(data) ? data : [];
+    const projectsData = Array.isArray(data) ? data : [];
+
+    setProjects([...projectsData])
 
     return (
-        <Collection>
+        <Collection onProjectAdded={handleProjectAdded}>
             {projects.map(item => (
                 <Project key={item.id} title={item.title} imageUrl={item.imageUrl} description={item.description} />
             ))}

@@ -1,9 +1,9 @@
 import AddProject from "@/components/component/addproject.tsx";
 
-function Collection({children}) {
+const Collection = ({ children, onProjectAdded }) => {
     return <div>
         {children}
-        <AddProject></AddProject>
+        <AddProject onProjectAdded={onProjectAdded}></AddProject>
     </div>
 }
 

@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { host } from "@/lib/utils.ts";
 import { useAuth } from "@/components/providers/AuthProvider.tsx";
 
+// Async function to submit the project data to the backend
 const submitProject = async (projectData) => {
     const token = localStorage.getItem('authToken'); // Example of getting the token from local storage
 
@@ -32,8 +33,15 @@ const AddProject = ({ onProjectAdded }) => {
 
     const mutation = useMutation({
         mutationFn: submitProject,
-        onSuccess: () => {
-            onProjectAdded();
+        onSuccess: (data) => {
+            // Creating a new project object from the returned data
+            const newProject = { id: data.id, title, description, imageUrl };
+            // Calling the callback with the new project data
+            onProjectAdded(newProject);
+            // Resetting the form fields
+            setTitle('');
+            setDescription('');
+            setImageUrl('');
         },
     });
 
@@ -44,9 +52,6 @@ const AddProject = ({ onProjectAdded }) => {
 
         try {
             await mutation.mutateAsync(projectData);
-            setTitle('');
-            setDescription('');
-            setImageUrl('');
         } catch (error) {
             console.log(error);
         }
@@ -85,11 +90,10 @@ const AddProject = ({ onProjectAdded }) => {
                     required
                 />
             </label>
-            <Button type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? 'Submitting...' : 'Add Project'}
+            <Button type="submit" disabled={mutation.isLoading}>
+                {mutation.isLoading ? 'Submitting...' : 'Add Project'}
             </Button>
             {mutation.isError && <p>Error: {mutation.error.message}</p>}
-            {mutation.isSuccess && <p>{mutation.data.message}</p>}
         </form>
     );
 };
