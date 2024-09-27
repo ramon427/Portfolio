@@ -34,11 +34,10 @@ const AddProject = ({ onProjectAdded }) => {
     const mutation = useMutation({
         mutationFn: submitProject,
         onSuccess: (data) => {
-            // Creating a new project object from the returned data
             const newProject = { id: data.id, title, description, imageUrl };
-            // Calling the callback with the new project data
+
             onProjectAdded(newProject);
-            // Resetting the form fields
+
             setTitle('');
             setDescription('');
             setImageUrl('');
@@ -90,8 +89,8 @@ const AddProject = ({ onProjectAdded }) => {
                     required
                 />
             </label>
-            <Button type="submit" disabled={mutation.isLoading}>
-                {mutation.isLoading ? 'Submitting...' : 'Add Project'}
+            <Button type="submit" disabled={mutation.isPending}>
+                {mutation.isPending ? 'Submitting...' : 'Add Project'}
             </Button>
             {mutation.isError && <p>Error: {mutation.error.message}</p>}
         </form>

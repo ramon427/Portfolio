@@ -1,4 +1,4 @@
-import {Box} from "lucide-react";
+import Box from "@/components/ui/box.tsx";
 
 function Project(props) {
     return (
