@@ -30,15 +30,11 @@ public class TokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         var token = getJwtFromHeader(request);
-        System.out.println("Extracted Token: " + token);
 
         if (token != null && tokenService.checkToken(token)) {
             var authentication = getAuthentication(token);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("Authentication set: " + authentication);
-        } else {
-            System.out.println("Token is invalid or null");
         }
 
         filterChain.doFilter(request, response);
@@ -46,7 +42,9 @@ public class TokenFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        return "/api/password".equals(request.getRequestURI());
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+        return "/api/password".equals(uri) || "/api/token".equals(uri) || ("GET".equalsIgnoreCase(method) && uri.equals("/api/projects"));
     }
 
     private String getJwtFromHeader(HttpServletRequest request) {

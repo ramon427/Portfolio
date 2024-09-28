@@ -7,6 +7,9 @@ export default {
   ],
   theme: {
   	extend: {
+		flexBasis: {
+			'300': '300px',
+		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

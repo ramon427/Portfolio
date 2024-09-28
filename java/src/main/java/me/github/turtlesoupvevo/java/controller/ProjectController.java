@@ -18,7 +18,6 @@ public class ProjectController {
 
     @GetMapping
     public List<Project> getAllProjects() {
-        System.out.println("test");
         return projectService.getAllProjects();
     }
 

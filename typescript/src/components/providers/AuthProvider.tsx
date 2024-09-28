@@ -1,33 +1,45 @@
-import {createContext, useContext, useState, useEffect} from "react";
-import {host} from "@/lib/utils.ts";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { host } from "@/lib/utils.ts";
 
-const AuthContext = createContext(null);
-export const AuthProvider = ({children}) => {
-    const [authToken, setAuthToken] = useState(() => {
-        return localStorage.getItem('authToken') || null;
+interface AuthContextProps {
+    authToken: string | null;
+    setAuthToken: (token: string) => void;
+    isAuthenticated: boolean;
+}
+
+// Create the AuthContext with the appropriate type
+const AuthContext = createContext<AuthContextProps>({
+    authToken: null,
+    setAuthToken: () => {},
+    isAuthenticated: false,
+});
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+    const [authToken, setAuthToken] = useState<string | null>(() => {
+        return localStorage.getItem('authToken');
     });
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const validateToken = async (token) => {
+        const validateToken = async (token: string) => {
             try {
                 const response = await fetch(`${host}/api/token`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
+                        'Authorization': `Bearer ${token}`,
+                    },
                 });
 
                 if (response.ok) {
-
                     setIsAuthenticated(true);
                 } else {
+                    console.error('Token validation failed', response.statusText);
                     setAuthToken(null);
                     setIsAuthenticated(false);
                 }
             } catch (error) {
-                console.error(error);
+                console.error('Token validation error', error);
                 setAuthToken(null);
                 setIsAuthenticated(false);
             }
@@ -39,6 +51,7 @@ export const AuthProvider = ({children}) => {
             setIsAuthenticated(false);
         }
     }, [authToken]);
+
     useEffect(() => {
         if (authToken) {
             localStorage.setItem('authToken', authToken);
@@ -48,13 +61,10 @@ export const AuthProvider = ({children}) => {
     }, [authToken]);
 
     return (
-        <AuthContext.Provider value={{authToken, setAuthToken, isAuthenticated}}>
+        <AuthContext.Provider value={{ authToken, setAuthToken, isAuthenticated }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuth = () => {
-    return useContext(AuthContext);
-};
-
+export const useAuth = () => useContext(AuthContext);

@@ -19,7 +19,6 @@ public class TokenController {
     @PostMapping
     public boolean validateToken(@RequestHeader("Authorization") String tokenHeader) {
         String token = tokenHeader.substring(7);
-        System.out.println(token);
         return tokenService.checkToken(token);
     }
 }
