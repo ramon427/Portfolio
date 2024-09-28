@@ -6,7 +6,7 @@ import Project from "@/components/component/project.tsx";
 import { useState, useEffect } from "react";
 
 function ProjectList() {
-    const { authToken } = useAuth();
+    const { authToken, isAuthenticated } = useAuth();
     const [projects, setProjects] = useState([]);
 
     const handleProjectAdded = (newProject) => {
@@ -19,8 +19,9 @@ function ProjectList() {
             const response = await fetch(`${host}/api/projects`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': authToken ? `Bearer ${authToken}` : ''
-                },
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                }
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -42,7 +43,7 @@ function ProjectList() {
     if (error) return <h1>An error has occurred: {error.message}</h1>;
 
     return (
-        <Collection onProjectAdded={handleProjectAdded}>
+        <Collection onProjectAdded={handleProjectAdded} isAuthenticated={isAuthenticated}>
             {projects.map(item => (
                 <Project key={item.id} title={item.title} imageUrl={item.imageUrl} description={item.description} />
             ))}

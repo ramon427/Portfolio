@@ -3,6 +3,7 @@ package me.github.turtlesoupvevo.java.config;
 import me.github.turtlesoupvevo.java.components.TokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,7 +24,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));  // Frontend origin
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -41,7 +42,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/password").permitAll()
                         .requestMatchers("/api/test").authenticated()
-                        .anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/projects").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/projects").authenticated()
+
                 )
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -52,5 +55,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

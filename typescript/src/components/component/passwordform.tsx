@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
-
+import { useNavigate } from 'react-router-dom';
 import {useMutation} from '@tanstack/react-query'
 import {host} from "@/lib/utils.ts";
 import {useAuth} from "@/components/providers/AuthProvider.tsx";
@@ -23,11 +23,18 @@ const submitPassword = async (password: string): Promise<any> => {
 };
 
 const PasswordForm = () => {
+    const navigate = useNavigate();
     const [password, setPassword] = useState('');
     const {setAuthToken} = useAuth();
 
     const mutation = useMutation({
         mutationFn: submitPassword,
+        onSuccess: (data) => {
+            if (data && data.token) {
+                setAuthToken(data.token);
+                navigate('/');
+            }
+        },
     });
     const handleSubmit = async event => {
         event.preventDefault();
